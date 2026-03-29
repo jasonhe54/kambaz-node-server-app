@@ -1,6 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
 
 export default function AssignmentsDao(db) {
+  function findAssignmentById(assignmentId) {
+    return db.assignments.find((assignment) => assignment._id === assignmentId);
+  }
+
   function findAssignmentsForCourse(courseId) {
     const { assignments } = db;
     return assignments.filter((assignment) => assignment.course === courseId);
@@ -25,6 +29,7 @@ export default function AssignmentsDao(db) {
   }
 
   return {
+    findAssignmentById,
     findAssignmentsForCourse,
     createAssignment,
     deleteAssignment,

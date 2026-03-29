@@ -55,8 +55,13 @@ export default function CourseRoutes(app, db) {
       return;
     }
     const { courseId } = req.params;
-    const status = enrollmentsDao.enrollUserInCourse(currentUser._id, courseId);
-    res.send(status);
+    const course = dao.findCourseById(courseId);
+    if (!course) {
+      res.status(404).json({ message: `Unable to enroll in course ${courseId}` });
+      return;
+    }
+    const enrollment = enrollmentsDao.enrollUserInCourse(currentUser._id, courseId);
+    res.json({ course, enrollment });
   };
 
   const unenrollUserFromCourse = (req, res) => {
@@ -66,8 +71,8 @@ export default function CourseRoutes(app, db) {
       return;
     }
     const { courseId } = req.params;
-    const status = enrollmentsDao.unenrollUserFromCourse(currentUser._id, courseId);
-    res.send(status);
+    enrollmentsDao.unenrollUserFromCourse(currentUser._id, courseId);
+    res.sendStatus(200);
   };
 
   app.post("/api/users/current/courses", createCourse);

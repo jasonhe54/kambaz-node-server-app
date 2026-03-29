@@ -57,6 +57,20 @@ export default [
   },
   {
     "_id": "U101",
+    "username": "iron_man",
+    "password": "stark123",
+    "firstName": "Tony",
+    "lastName": "Stark",
+    "email": "tony+ironman@stark.com",
+    "dob": "1970-05-29T00:00:00.000Z",
+    "role": "STUDENT",
+    "loginId": "001234560S",
+    "section": "S101",
+    "lastActivity": "2026-02-01",
+    "totalActivity": "10:21:32"
+  },
+  {
+    "_id": "U111",
     "username": "tony_stark",
     "password": "stark123",
     "firstName": "Tony",

@@ -5,6 +5,10 @@ export default function CoursesDao(db) {
     return db.courses;
   }
 
+  function findCourseById(courseId) {
+    return db.courses.find((course) => course._id === courseId);
+  }
+
   function findCoursesForEnrolledUser(userId) {
     const { courses, enrollments } = db;
     const enrolledCourses = courses.filter((course) =>
@@ -36,6 +40,7 @@ export default function CoursesDao(db) {
 
   return {
     findAllCourses,
+    findCourseById,
     findCoursesForEnrolledUser,
     createCourse,
     deleteCourse,

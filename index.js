@@ -19,9 +19,13 @@ const app = express()
 // CORS for every assignment after (unless I manually fix it, but then it breaks for this assignment)
 function handleVercelSubdomains(origin, callback) {
   if (!origin) return callback(null, true);
+  const clientUrlRegex = process.env.CLIENT_URL_REGEX
+    ? new RegExp(process.env.CLIENT_URL_REGEX)
+    : null;
   const allowed =
     origin === "http://localhost:3000" ||
-    new RegExp(process.env.CLIENT_URL_REGEX).test(origin);
+    origin === process.env.CLIENT_URL ||
+    clientUrlRegex?.test(origin);
   if (allowed) return callback(null, true);
   return callback(new Error("Not allowed by CORS"));
 }
