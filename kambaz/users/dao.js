@@ -15,8 +15,8 @@ export default function UsersDao(db) {
     if (!user) {
       return null;
     }
-    // verify that the updated username is not already taken
-    if (findUserByUsername(userUpdates.username)) {
+    const existingUser = userUpdates.username ? findUserByUsername(userUpdates.username) : null;
+    if (existingUser && existingUser._id !== userId) {
       return null;
     }
     Object.assign(user, userUpdates, { _id: userId });

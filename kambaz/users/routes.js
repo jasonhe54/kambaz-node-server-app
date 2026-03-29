@@ -43,9 +43,31 @@ export default function UserRoutes(app, db) {
   const updateUser = (req, res) => {
     const userId = req.params.userId;
     const userUpdates = req.body;
+    const sessionUser = req.session["currentUser"];
+    if (!sessionUser) {
+      res.status(401).json({ message: "You must be signed in to update your profile." });
+      return;
+    }
+    if (sessionUser._id !== userId) {
+      res.status(403).json({ message: "You can only update your own profile." });
+      return;
+    }
+    if (!userUpdates || Object.keys(userUpdates).length === 0) {
+      res.status(400).json({ message: "No profile updates were provided." });
+      return;
+    }
+    const existingUser = userUpdates.username ? dao.findUserByUsername(userUpdates.username) : null;
+    if (existingUser && existingUser._id !== userId) {
+      res.status(400).json({ message: "Username already taken" });
+      return;
+    }
     const currentUser = dao.updateUser(userId, userUpdates);
-    if (!currentUser) {
+    if (!currentUser && !dao.findUserById(userId)) {
       res.status(404).json({ message: `Unable to update user with ID ${userId}` });
+      return;
+    }
+    if (!currentUser) {
+      res.status(400).json({ message: "Unable to update profile." });
       return;
     }
     req.session["currentUser"] = currentUser;
@@ -68,7 +90,7 @@ export default function UserRoutes(app, db) {
       req.session["currentUser"] = currentUser;
       res.json(currentUser);
     } else {
-      res.status(401).json({ message: "Unable to login. Try again later." });
+      res.status(401).json({ message: "Unable to login. Double check your username and password." });
     }
   };
   const signout = (req, res) => {
