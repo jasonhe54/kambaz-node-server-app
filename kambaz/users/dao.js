@@ -15,6 +15,10 @@ export default function UsersDao(db) {
     if (!user) {
       return null;
     }
+    // verify that the updated username is not already taken
+    if (findUserByUsername(userUpdates.username)) {
+      return null;
+    }
     Object.assign(user, userUpdates, { _id: userId });
     return user;
   };
