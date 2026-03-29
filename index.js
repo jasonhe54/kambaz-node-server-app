@@ -11,9 +11,24 @@ import ModulesRoutes from "./kambaz/modules/routes.js";
 import AssignmentRoutes from "./kambaz/assignments/routes.js";
 
 const app = express()
+
+// writing custom logic for handling an regex of vercel project subdomains since the lecture
+// instructions would break my assignment deployment pipeline with vercel preview builds since
+// every assignment requires a preview build (since each assignment is on its own branch).
+// in theory, the assignment instructions would work for this assignment, but it'll automatically break
+// CORS for every assignment after (unless I manually fix it, but then it breaks for this assignment)
+function handleVercelSubdomains(origin, callback) {
+  if (!origin) return callback(null, true);
+  const allowed =
+    origin === "http://localhost:3000" ||
+    new RegExp(process.env.CLIENT_URL_REGEX).test(origin);
+  if (allowed) return callback(null, true);
+  return callback(new Error("Not allowed by CORS"));
+}
+
 app.use(cors({
   credentials: true,
-  origin: process.env.CLIENT_URL || "http://localhost:3000",
+  origin: handleVercelSubdomains,
 }));
 const sessionOptions = {
   secret: process.env.SESSION_SECRET || "kambaz",
