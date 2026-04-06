@@ -1,10 +1,18 @@
 import UsersDao from "./dao.js";
+
 export default function UserRoutes(app, db) {
   const dao = UsersDao(db);
+
   const createUser = (req, res) => {
     const newUser = dao.createUser(req.body);
+    // if error present, return 400 with that error message
+    if (newUser?.error) {
+      res.status(400).json({ message: newUser.error });
+      return;
+    }
     res.json(newUser);
   };
+
   const deleteUser = (req, res) => {
     const { userId } = req.params;
     const deletedUser = dao.deleteUser(userId);
@@ -17,6 +25,7 @@ export default function UserRoutes(app, db) {
     }
     res.json(deletedUser);
   };
+
   const findAllUsers = (req, res) => {
     const { username, password } = req.query;
     if (username && password) {
@@ -31,6 +40,7 @@ export default function UserRoutes(app, db) {
     }
     res.json(dao.findAllUsers());
   };
+
   const findUserById = (req, res) => {
     const { userId } = req.params;
     const user = dao.findUserById(userId);
@@ -40,6 +50,7 @@ export default function UserRoutes(app, db) {
     }
     res.json(user);
   };
+
   const updateUser = (req, res) => {
     const userId = req.params.userId;
     const userUpdates = req.body;
@@ -56,12 +67,20 @@ export default function UserRoutes(app, db) {
       res.status(400).json({ message: "No profile updates were provided." });
       return;
     }
-    const existingUser = userUpdates.username ? dao.findUserByUsername(userUpdates.username) : null;
+
+    const existingUser = userUpdates.username
+      ? dao.findUserByUsername(userUpdates.username)
+      : null;
     if (existingUser && existingUser._id !== userId) {
       res.status(400).json({ message: "Username already taken" });
       return;
     }
+
     const currentUser = dao.updateUser(userId, userUpdates);
+    if (currentUser?.error) {
+      res.status(400).json({ message: currentUser.error });
+      return;
+    }
     if (!currentUser && !dao.findUserById(userId)) {
       res.status(404).json({ message: `Unable to update user with ID ${userId}` });
       return;
@@ -70,19 +89,28 @@ export default function UserRoutes(app, db) {
       res.status(400).json({ message: "Unable to update profile." });
       return;
     }
+
     req.session["currentUser"] = currentUser;
     res.json(currentUser);
   };
+
   const signup = (req, res) => {
     const user = dao.findUserByUsername(req.body.username);
     if (user) {
       res.status(400).json({ message: "Username already taken" });
       return;
     }
+
     const currentUser = dao.createUser(req.body);
+    if (currentUser?.error) {
+      res.status(400).json({ message: currentUser.error });
+      return;
+    }
+
     req.session["currentUser"] = currentUser;
     res.json(currentUser);
   };
+
   const signin = (req, res) => {
     const { username, password } = req.body;
     const currentUser = dao.findUserByCredentials(username, password);
@@ -93,11 +121,13 @@ export default function UserRoutes(app, db) {
       res.status(401).json({ message: "Unable to login. Double check your username and password." });
     }
   };
+
   const signout = (req, res) => {
     req.session.destroy(() => {
       res.sendStatus(200);
     });
   };
+
   const profile = (req, res) => {
     const currentUser = req.session["currentUser"];
     if (!currentUser) {
@@ -106,6 +136,7 @@ export default function UserRoutes(app, db) {
     }
     res.json(currentUser);
   };
+
   app.post("/api/users", createUser);
   app.get("/api/users", findAllUsers);
   app.get("/api/users/:userId", findUserById);
