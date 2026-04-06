@@ -26,9 +26,9 @@ export default function CoursesDao(db) {
   }
 
   function deleteCourse(courseId) {
-    const { courses, enrollments } = db;
-    db.courses = courses.filter((course) => course._id !== courseId);
+    const { enrollments } = db;
     db.enrollments = enrollments.filter((enrollment) => enrollment.course !== courseId);
+    return model.deleteOne({ _id: courseId });
   }
 
   function updateCourse(courseId, courseUpdates) {
