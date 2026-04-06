@@ -58,19 +58,24 @@ export default function UserRoutes(app) {
   };
 
   const updateUser = async (req, res) => {
-    const userId = req.params.userId;
+    const { userId } = req.params;
     const userUpdates = req.body;
-    const sessionUser = req.session["currentUser"];
-    if (!sessionUser) {
-      res.status(401).json({ message: "You must be signed in to update your profile." });
+    const currentUser = req.session["currentUser"];
+
+    if (!currentUser) {
+      res.status(401).json({ message: "You must be signed in to update a user." });
       return;
     }
-    if (sessionUser._id !== userId) {
-      res.status(403).json({ message: "You can only update your own profile." });
+
+    const isSelf = currentUser._id === userId;
+    const isAdmin = currentUser.role === "ADMIN";
+    if (!isSelf && !isAdmin) {
+      res.status(403).json({ message: "You can only update your own profile unless you are an admin." });
       return;
     }
+
     if (!userUpdates || Object.keys(userUpdates).length === 0) {
-      res.status(400).json({ message: "No profile updates were provided." });
+      res.status(400).json({ message: "No user updates were provided." });
       return;
     }
 
@@ -88,14 +93,14 @@ export default function UserRoutes(app) {
       return;
     }
 
-    const currentUser = await dao.findUserById(userId);
-    if (!currentUser) {
-      res.status(400).json({ message: "Unable to update profile." });
+    if (isSelf) {
+      req.session["currentUser"] = { ...currentUser, ...userUpdates };
+      res.json(req.session["currentUser"]);
       return;
     }
 
-    req.session["currentUser"] = currentUser;
-    res.json(currentUser);
+    const updatedUser = await dao.findUserById(userId);
+    res.json(updatedUser);
   };
 
   const signup = async (req, res) => {
