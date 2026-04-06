@@ -5,11 +5,6 @@ export default function UserRoutes(app) {
 
   const createUser = async (req, res) => {
     const newUser = await dao.createUser(req.body);
-    // if error present, return 400 with that error message
-    if (newUser?.error) {
-      res.status(400).json({ message: newUser.error });
-      return;
-    }
     res.json(newUser);
   };
 
