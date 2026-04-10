@@ -1,9 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
+import model from "../courses/model.js";
 
 export default function ModulesDao(db) {
-  function findModulesForCourse(courseId) {
-    const { modules } = db;
-    return modules.filter((module) => module.course === courseId);
+  async function findModulesForCourse(courseId) {
+    const course = await model.findById(courseId);
+    return course.modules;
   }
 
   function createModule(module) {

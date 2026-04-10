@@ -3,9 +3,9 @@ import ModulesDao from "./dao.js";
 export default function ModulesRoutes(app, db) {
   const dao = ModulesDao(db);
 
-  const findModulesForCourse = (req, res) => {
+  const findModulesForCourse = async (req, res) => {
     const { courseId } = req.params;
-    const modules = dao.findModulesForCourse(courseId);
+    const modules = await dao.findModulesForCourse(courseId);
     res.json(modules);
   };
 
