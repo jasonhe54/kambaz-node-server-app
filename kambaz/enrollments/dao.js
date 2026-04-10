@@ -23,10 +23,15 @@ export default function EnrollmentsDao(db) {
     return model.deleteOne({ user, course });
   }
 
+  function unenrollAllUsersFromCourse(courseId) {
+    return model.deleteMany({ course: courseId });
+  }
+
   return {
     findCoursesForUser,
     findUsersForCourse,
     enrollUserInCourse,
     unenrollUserFromCourse,
+    unenrollAllUsersFromCourse,
   };
 }
