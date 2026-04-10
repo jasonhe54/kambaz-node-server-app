@@ -24,10 +24,11 @@ export default function ModulesDao(db) {
     return status;
   }
 
-  function updateModule(moduleId, moduleUpdates) {
-    const { modules } = db;
-    const module = modules.find((module) => module._id === moduleId);
+  async function updateModule(courseId, moduleId, moduleUpdates) {
+    const course = await model.findById(courseId);
+    const module = course.modules.id(moduleId);
     Object.assign(module, moduleUpdates);
+    await course.save();
     return module;
   }
 
