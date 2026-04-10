@@ -7,15 +7,21 @@ export default function ModulesDao(db) {
     return course.modules;
   }
 
-  function createModule(module) {
+  async function createModule(courseId, module) {
     const newModule = { ...module, _id: uuidv4() };
-    db.modules = [...db.modules, newModule];
+    await model.updateOne(
+      { _id: courseId },
+      { $push: { modules: newModule } }
+    );
     return newModule;
   }
 
-  function deleteModule(moduleId) {
-    const { modules } = db;
-    db.modules = modules.filter((module) => module._id !== moduleId);
+  async function deleteModule(courseId, moduleId) {
+    const status = await model.updateOne(
+      { _id: courseId },
+      { $pull: { modules: { _id: moduleId } } }
+    );
+    return status;
   }
 
   function updateModule(moduleId, moduleUpdates) {
