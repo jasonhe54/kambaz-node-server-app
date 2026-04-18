@@ -223,7 +223,7 @@ export default function QuizzesRoutes(app) {
     const now = Date.now();
     const { lastAttemptScore, ...quizBody } = req.body || {};
     const quiz = {
-      title: "New Quiz",
+      title: "Untitled Quiz",
       description: "",
       published: false,
       quizType: "Graded Quiz",
@@ -244,6 +244,7 @@ export default function QuizzesRoutes(app) {
       untilDate: new Date(now + 1000 * 60 * 60 * 24 * 8).toISOString(),
       ...quizBody,
       course: courseId,
+      isDraft: true,
     };
 
     const newQuiz = await dao.createQuiz(quiz);
