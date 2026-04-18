@@ -8,6 +8,7 @@ import UserRoutes from "./kambaz/users/routes.js";
 import CourseRoutes from "./kambaz/courses/routes.js";
 import ModulesRoutes from "./kambaz/modules/routes.js";
 import AssignmentRoutes from "./kambaz/assignments/routes.js";
+import QuizzesRoutes from "./kambaz/quizzes/routes.js";
 import mongoose from "mongoose";
 
 
@@ -57,6 +58,7 @@ UserRoutes(app);
 CourseRoutes(app);
 ModulesRoutes(app);
 AssignmentRoutes(app);
+QuizzesRoutes(app);
 lab5(app)
 hello(app)
 const port = process.env.PORT || 4000
