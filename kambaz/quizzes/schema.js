@@ -32,6 +32,7 @@ const quizSchema = new mongoose.Schema(
     untilDate: String,
     points: { type: Number, default: 0 },
     questionCount: { type: Number, default: 0 },
+    questionIds: { type: [String], default: [] },
   },
   { collection: "quizzes" }
 );

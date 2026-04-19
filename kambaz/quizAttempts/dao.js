@@ -6,6 +6,14 @@ export default function QuizAttemptsDao() {
     model.create({
       ...attempt,
       _id: uuidv4(),
+      attemptNumber:
+        Number.isFinite(attempt.attemptNumber) && attempt.attemptNumber > 0
+          ? attempt.attemptNumber
+          : 1,
+      answers: Array.isArray(attempt.answers) ? attempt.answers : [],
+      results: Array.isArray(attempt.results) ? attempt.results : [],
+      score: Number.isFinite(attempt.score) ? attempt.score : 0,
+      maxScore: Number.isFinite(attempt.maxScore) ? attempt.maxScore : 0,
       submittedAt: attempt.submittedAt || new Date(),
       startedAt: attempt.startedAt || new Date(),
     });
@@ -15,6 +23,9 @@ export default function QuizAttemptsDao() {
 
   const findLatestAttemptForUserAndQuiz = (userId, quizId) =>
     model.findOne({ user: userId, quiz: quizId }).sort({ submittedAt: -1 });
+
+  const countAttemptsForUserAndQuiz = (userId, quizId) =>
+    model.countDocuments({ user: userId, quiz: quizId });
 
   const findLatestAttemptsForUserByQuizIds = (userId, quizIds) => {
     if (!quizIds.length) return Promise.resolve([]);
@@ -30,6 +41,8 @@ export default function QuizAttemptsDao() {
       { $replaceRoot: { newRoot: "$attempt" } },
     ]);
   };
+
+  const deleteAttemptsForQuiz = (quizId) => model.deleteMany({ quiz: quizId });
 
   async function seedAttempts(initialAttempts) {
     if (!initialAttempts.length) return;
@@ -49,7 +62,9 @@ export default function QuizAttemptsDao() {
     createAttempt,
     findAttemptsForUserAndQuiz,
     findLatestAttemptForUserAndQuiz,
+    countAttemptsForUserAndQuiz,
     findLatestAttemptsForUserByQuizIds,
+    deleteAttemptsForQuiz,
     seedAttempts,
   };
 }
