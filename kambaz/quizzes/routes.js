@@ -81,7 +81,7 @@ export default function QuizzesRoutes(app) {
     normalizeQuestionIds,
   });
 
-  const { createAttemptForQuiz, findCurrentUsersAttemptsForQuiz } =
+  const { createAttemptForQuiz, previewGradeForQuiz, findCurrentUsersAttemptsForQuiz } =
     createAttemptHandlers({
       dao,
       attemptsDao,
@@ -114,5 +114,6 @@ export default function QuizzesRoutes(app) {
   app.delete("/api/quizzes/:quizId/questions/:questionId", deleteQuestionFromQuiz);
 
   app.post("/api/quizzes/:quizId/attempts", createAttemptForQuiz);
+  app.post("/api/quizzes/:quizId/preview-grade", previewGradeForQuiz);
   app.get("/api/quizzes/:quizId/attempts/me", findCurrentUsersAttemptsForQuiz);
 }
